@@ -8,6 +8,8 @@
 		<th>Name</th>
 		<th>Method</th>
 		<th>URI</th>
+		<th>Last Viewed</th>
+		<th>Views</th>
 		<th>Actions</th>
 	</tr>
 </thead>
@@ -18,6 +20,8 @@
 		<td>{{.Name}}</td>
 		<td>{{.RequestMethod}}</td>
 		<td>{{.RequestUri}}</td>
+		<td>{{.LastViewed}}</td>
+		<td>{{.Views}}</td>
 		<td>
 			<a href="edit/{{.Id}}" title="edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
 			<a href="#" data-href="/stubman/delete/{{.Id}}" data-toggle="modal" data-target="#del-confirm" class="btn-del" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>

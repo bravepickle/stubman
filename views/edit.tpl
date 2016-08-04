@@ -12,10 +12,17 @@
     <label for="model-name">Name</label>
     <input type="text" class="form-control" value="{{.Data.Name}}" id="model-name" name="name" placeholder="Name">
   </div>
-
   <div class="form-group">
-    <label for="model-id">Created Date</label>
+    <label for="model-created">Created Date</label>
     <input readonly="readonly" type="text" class="form-control" value="{{.Data.Created}}" id="model-created" placeholder="Created Date">
+  </div>
+  <div class="form-group">
+    <label for="model-last-viewed">Last Viewed Date</label>
+    <input readonly="readonly" type="text" class="form-control" value="{{.Data.LastViewed}}" id="model-last-viewed" placeholder="Last Viewed Date">
+  </div>
+  <div class="form-group">
+    <label for="model-views">Views Count</label>
+    <input readonly="readonly" type="text" class="form-control" value="{{.Data.Views}}" id="model-views" placeholder="Views Count">
   </div>
 </fieldset>
 

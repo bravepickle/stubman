@@ -169,7 +169,7 @@ func (r *StubRepo) Update(model *Stub) error {
 
 // Update model views
 func (r *StubRepo) PrepareUpdateView() (*sql.Stmt, error) {
-	return r.Conn.Prepare("UPDATE stub SET last_viewed=?, views=? WHERE id = ?")
+	return r.Conn.Prepare("UPDATE stub SET last_viewed=DATETIME('now'), views=views+1 WHERE id = ?")
 }
 
 func NewStubRepo(db *Db) *StubRepo {

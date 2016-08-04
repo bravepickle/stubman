@@ -67,20 +67,6 @@ func main() {
 		http.ServeFile(w, r, r.URL.Path[prefixLen:])
 	})
 
-	// handle the rest of URIs
-	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		if !Config.Stubman.Disabled {
-			//			ProxyRequest(w, req)
-		} else {
-			w.Header().Set(`X-Stubman-Page`, `true`)
-
-			w.WriteHeader(http.StatusNotFound)
-
-			page := PageError{Title: `404 Not Found`, Message: `Page "` + req.URL.String() + `" not found`}
-			RenderErrorPage(`error.tpl`, page, w)
-		}
-	})
-
 	if Debug {
 		fmt.Printf("Listening to: %s\n", Config.App.String())
 	}

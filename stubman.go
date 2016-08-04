@@ -37,10 +37,10 @@ func init() {
 func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	//	if Config.
 	pcat := pathConcat{prefix}
+	repo := NewStubRepo(nil)
 
 	// list all stubs
 	mux.HandleFunc(pcat.fullPath(`/`), func(w http.ResponseWriter, req *http.Request) {
-		repo := NewStubRepo(nil)
 		models, err := repo.FindAll()
 
 		if err != nil {
@@ -60,7 +60,6 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		if req.Method == `POST` {
 			req.ParseForm()
 			stub := NewStubFromRequest(req)
-			repo := NewStubRepo(nil)
 
 			id, err := repo.Insert(stub)
 			if err != nil {
@@ -92,7 +91,6 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			return
 		}
 
-		repo := NewStubRepo(nil)
 		idNum, err := strconv.Atoi(id)
 		if err != nil {
 			log.Println(err.Error())
@@ -153,7 +151,6 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			return
 		}
 
-		repo := NewStubRepo(nil)
 		idNum, err := strconv.Atoi(id)
 		if err != nil {
 			log.Println(err.Error())
@@ -179,11 +176,32 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			w.WriteHeader(http.StatusNoContent)
 		}
 	})
+
+	viewsStmt, err := repo.PrepareUpdateView()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	// handle the rest of URIs
+	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		if !Config.Stubman.Disabled {
+			w.Write(`Successfully received request: ` + req.Method + ` ` + req.URL.String())
+		} else {
+			w.Header().Set(`X-Stubman-Page`, `true`)
+
+			w.WriteHeader(http.StatusNotFound)
+
+			page := PageError{Title: `404 Not Found`, Message: `Page "` + req.URL.String() + `" not found`}
+			RenderErrorPage(`error.tpl`, page, w)
+		}
+
+		// TODO: add check logic + views increment
+		//		viewsStmt.Exec(1)
+	})
 }
 
 func NewStubFromRequest(req *http.Request) *Stub {
 	stub := &Stub{Created: time.Now()}
-	log.Println(`REQUEST BODY: `, string(req.Form.Get(`request[headers][]`)))
 
 	stub.Name = string(req.Form.Get(`name`))
 	stub.RequestMethod = string(req.Form.Get(`request_method`))
