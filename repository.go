@@ -30,6 +30,8 @@ type Stub struct {
 	Response       string
 	ResponseParsed ResponseStub
 	Created        time.Time
+	LastViewed     time.Time
+	Views          int64
 }
 
 // Parse parses values from Request and Response and puts them to RequestParsed, ResponseParsed accordingly
@@ -66,7 +68,7 @@ func (r *StubRepo) FindAll() ([]Stub, error) {
 	var result []Stub
 
 	rows, err := r.Conn.Query("SELECT id, name, request_method, " +
-		"request_uri, request, response, created FROM stub")
+		"request_uri, request, response, created, last_viewed, views FROM stub")
 	if err != nil {
 		return result, err
 	}
@@ -76,12 +78,11 @@ func (r *StubRepo) FindAll() ([]Stub, error) {
 
 		if err := rows.Scan(&model.Id, &model.Name,
 			&model.RequestMethod, &model.RequestUri,
-			&model.Request, &model.Response, &model.Created); err != nil {
+			&model.Request, &model.Response, &model.Created,
+			&model.LastViewed, &model.Views); err != nil {
 			return result, err
 		}
 		model.Decode()
-
-		//		fmt.Printf("Model: %v\n", model)
 
 		result = append(result, model)
 	}
@@ -98,7 +99,7 @@ func (r *StubRepo) Find(id int) (*Stub, error) {
 	model := Stub{}
 
 	rows, err := r.Conn.Query("SELECT id, name, request_method, "+
-		"request_uri, request, response, created FROM stub WHERE id = $1", id)
+		"request_uri, request, response, created, last_viewed, views FROM stub WHERE id = $1", id)
 	if err != nil {
 		return &model, err
 	}
@@ -106,7 +107,8 @@ func (r *StubRepo) Find(id int) (*Stub, error) {
 	for rows.Next() {
 		if err := rows.Scan(&model.Id, &model.Name,
 			&model.RequestMethod, &model.RequestUri,
-			&model.Request, &model.Response, &model.Created); err != nil {
+			&model.Request, &model.Response, &model.Created,
+			&model.LastViewed, &model.Views); err != nil {
 			return &model, err
 		}
 		model.Decode()
@@ -138,7 +140,10 @@ func (r *StubRepo) Delete(id int) (bool, error) {
 func (r *StubRepo) Insert(model *Stub) (int64, error) {
 	var id int64
 	result, err := r.Conn.Exec("INSERT INTO stub (name, request_method, request_uri, request, response, created) "+
-		"VALUES (?, ?, ?, ?, ?, ?)", model.Name, model.RequestMethod, model.RequestUri, model.Request, model.Response, model.Created.Format("2006-01-02 15:04:05"))
+		"VALUES (?, ?, ?, ?, ?, ?)",
+		model.Name, model.RequestMethod, model.RequestUri, model.Request,
+		model.Response, model.Created.Format("2006-01-02 15:04:05"),
+		model.LastViewed.Format("2006-01-02 15:04:05"), model.Views)
 	if err != nil {
 		return id, err
 	}
@@ -156,9 +161,15 @@ func (r *StubRepo) Insert(model *Stub) (int64, error) {
 // Update model
 func (r *StubRepo) Update(model *Stub) error {
 	_, err := r.Conn.Exec("UPDATE stub SET name=?, request_method=?, request_uri=?, request=?, response=? "+
-		"WHERE id = ?", model.Name, model.RequestMethod, model.RequestUri, model.Request, model.Response, model.Id)
+		"WHERE id = ?",
+		model.Name, model.RequestMethod, model.RequestUri, model.Request, model.Response, model.Id)
 
 	return err
+}
+
+// Update model views
+func (r *StubRepo) PrepareUpdateView() (*sql.Stmt, error) {
+	return r.Conn.Prepare("UPDATE stub SET last_viewed=?, views=? WHERE id = ?")
 }
 
 func NewStubRepo(db *Db) *StubRepo {

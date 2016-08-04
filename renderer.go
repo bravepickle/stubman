@@ -29,8 +29,22 @@ func RenderPage(tpl string, p interface{}, w io.Writer) {
 	}
 }
 
+func RenderErrorPage(tpl string, p interface{}, w io.Writer) {
+	tp, ok := parsedTemplates[tpl]
+
+	if !ok {
+		log.Fatalln(fmt.Sprintf(`Failed to find template: %s`, tpl))
+
+		return
+	}
+
+	if err := tp.ExecuteTemplate(w, tpl, p); err != nil {
+		log.Fatalln(err.Error())
+	}
+}
+
 func InitTemplates() {
-	tplNames := []string{`index.tpl`, `edit.tpl`, `create.tpl`}
+	tplNames := []string{`index.tpl`, `edit.tpl`, `create.tpl`, `error.tpl`}
 	parsedTemplates = make(map[string]*template.Template)
 	sep := string(filepath.Separator)
 	viewsPrefix := viewsDir + sep
@@ -46,4 +60,9 @@ type Page struct {
 	HomePage   bool
 	CreatePage bool
 	EditPage   bool
+}
+
+type PageError struct {
+	Title   string
+	Message string
 }

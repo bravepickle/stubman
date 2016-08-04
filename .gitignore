@@ -22,7 +22,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
-midway
+stubman
 config.yaml
 data.sqlite
 stub.sql

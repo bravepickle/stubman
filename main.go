@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
-	"time"
+	//	"strings"
+	//	"time"
 )
 
 const defaultConfigPath = `./config.yaml`
@@ -34,7 +34,7 @@ func main() {
 		return
 	}
 
-	if !initConfig(cfgPath, &Config) {
+	if !initConfig(cfgPath, &Config) && flag.Arg(0) != argCfgInit {
 		return
 	}
 
@@ -57,11 +57,14 @@ func main() {
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, `favicon.ico`)
 	})
+
 	mux.HandleFunc("/favicon.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, `favicon.png`)
 	})
-	mux.HandleFunc("/stubman/static", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, strings.TrimLeft(r.URL.Path, `/`))
+
+	prefixLen := len(prefixPathStubman) + 1
+	mux.HandleFunc("/stubman/static/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, r.URL.Path[prefixLen:])
 	})
 
 	// handle the rest of URIs
@@ -69,12 +72,14 @@ func main() {
 		if !Config.Stubman.Disabled {
 			//			ProxyRequest(w, req)
 		} else {
-			w.Header().Add(`X-Default-Page`, `true`)
-			w.Write([]byte(fmt.Sprintf("Request %s was received at %s\n", req.URL.String(), time.Now().String())))
+			w.Header().Set(`X-Stubman-Page`, `true`)
+
+			w.WriteHeader(http.StatusNotFound)
+
+			page := PageError{Title: `404 Not Found`, Message: `Page "` + req.URL.String() + `" not found`}
+			RenderErrorPage(`error.tpl`, page, w)
 		}
 	})
-
-	//	n.UseHandler(mux)
 
 	if Debug {
 		fmt.Printf("Listening to: %s\n", Config.App.String())

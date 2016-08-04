@@ -13,7 +13,17 @@ import (
 )
 
 const sqlSchemaInit = `
-create table stub (id integer not null primary key AUTOINCREMENT, name text, request_method text, request_uri text, request text, response text, created datetime);
+create table stub (
+	id integer not null primary key AUTOINCREMENT, 
+	name text, 
+	request_method text, 
+	request_uri text, 
+	request text, 
+	response text, 
+	created datetime, 
+	last_viewed datetime, 
+	views int
+);
 `
 
 // main db connection for app

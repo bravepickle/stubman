@@ -39,11 +39,15 @@ func parseAppInput(cfg string) bool {
 	if flag.NArg() > 0 {
 		switch flag.Arg(0) {
 		case argCfgInit:
-			if ok, err := saveToFile(appConfigExample, cfg); !ok {
+			if ok, err := saveToFile(appConfigExample, cfg); !ok || err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to init file \"%s\". Reason: %s\n", cfg, err.Error())
 			} else {
 				fmt.Printf("File \"%s\" was initialized successfully. Customize it and run application\n", cfg)
 			}
+
+			//			if err != nil {
+			//				fmt.Fprintf(os.Stderr, "Failed to init file \"%s\". Reason: %s\n", cfg, err.Error())
+			//			}
 
 		case argDbInit:
 			db, err := NewDb(Config.Stubman.Db.DbName, true)
