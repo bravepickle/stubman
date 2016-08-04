@@ -22,3 +22,8 @@ _testmain.go
 *.exe
 *.test
 *.prof
+midway
+config.yaml
+data.sqlite
+stub.sql
+*.log
