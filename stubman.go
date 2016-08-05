@@ -5,10 +5,11 @@ package main
 import (
 	"bytes"
 	"fmt"
-	//	"io/ioutil"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -156,7 +157,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		if err != nil {
 			log.Println(err.Error())
 			w.Write([]byte(err.Error()))
-			w.WriteHeader(400)
+			w.WriteHeader(http.StatusBadRequest)
 
 			return
 		}
@@ -165,7 +166,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		if err != nil {
 			log.Println(err.Error())
 			w.Write([]byte(err.Error()))
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
 
 			return
 		}
@@ -196,41 +197,70 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			found, err := searchStmt.Query(req.Method, req.RequestURI)
 			if err != nil {
 				log.Println(req.RequestURI, `: `, err.Error())
+
 				return
 			}
 
 			model := Stub{}
 			for found.Next() {
-				if err := found.Scan(&model.Id, &model.Name, &model.Response); err != nil {
+				if err := found.Scan(&model.Id, &model.Name, &model.Response, &model.Request); err != nil {
 					log.Println(req.RequestURI, `: `, err.Error())
+
 					return
 				}
+
 				model.Decode()
 			}
 
 			if model.Id == 0 {
-				w.Header().Set(`X-Stubman-Page`, `true`)
-				w.WriteHeader(http.StatusNotFound)
-
-				page := PageError{Title: `404 Not Found`, Message: `Page "` + req.URL.String() + `" not found`}
-				RenderErrorPage(`error.tpl`, page, w)
+				show404ErrorPage(w, req)
 			} else {
+				// check if headers are set
+				if len(model.RequestParsed.Headers) > 0 {
+					for _, h := range model.RequestParsed.Headers {
+						arr := strings.SplitN(h, `:`, 2)
+						if !containsHeader(strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1]), req.Header) {
+							show404ErrorPage(w, req)
+
+							return
+						}
+					}
+				}
+
+				body, err := ioutil.ReadAll(req.Body)
+				if err != nil {
+					log.Println(req.RequestURI, `:`, err.Error())
+					return
+				}
+
+				if req.Method != `GET` && req.Method != `ANY` && model.RequestParsed.Body != `` {
+					if string(body) != model.RequestParsed.Body {
+						show404ErrorPage(w, req)
+
+						return
+					}
+				}
+
 				for _, h := range model.ResponseParsed.Headers {
 					arr := strings.SplitN(h, `:`, 2)
-					if len(arr) == 2 {
-						w.Header().Add(strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1]))
-					} else {
-						fmt.Println(`Skipping broken header`, h, `for`, req.RequestURI)
-					}
+					w.Header().Add(strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1]))
 				}
 
 				w.WriteHeader(model.ResponseParsed.StatusCode)
 				w.Write([]byte(model.ResponseParsed.Body))
 
-				go func(id int64) { viewsStmt.Exec(id) }(model.Id) // non-blocking mode for update views
+				go viewsStmt.Exec(model.Id) // non-blocking mode for update views
 			}
 		}
 	})
+}
+
+func show404ErrorPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(`X-Stubman-Page`, `true`)
+	w.WriteHeader(http.StatusNotFound)
+
+	page := PageError{Title: `404 Not Found`, Message: `Page "` + r.URL.String() + `" not found`}
+	RenderErrorPage(`error.tpl`, page, w)
 }
 
 func NewStubFromRequest(req *http.Request) *Stub {
@@ -241,16 +271,46 @@ func NewStubFromRequest(req *http.Request) *Stub {
 	stub.RequestUri = string(req.Form.Get(`request_uri`))
 	stub.RequestParsed.Body = string(req.Form.Get(`request[body]`))
 	for _, val := range req.Form[`request[headers][]`] {
-		stub.RequestParsed.Headers = append(stub.RequestParsed.Headers, string(val))
+		arr := strings.SplitN(string(val), `:`, 2)
+		if len(arr) == 2 {
+			h := strings.TrimSpace(arr[0]) + `: ` + strings.TrimSpace(arr[1])
+
+			stub.RequestParsed.Headers = append(stub.RequestParsed.Headers, h)
+		} else {
+			fmt.Println(`Skipping broken request header`, val, `for`, req.RequestURI)
+		}
 	}
+	sort.Strings(stub.RequestParsed.Headers)
 
 	stub.ResponseParsed.StatusCode, _ = strconv.Atoi(strings.TrimSpace(req.Form.Get(`resposne[status_code]`)))
 	stub.ResponseParsed.Body = string(req.Form.Get(`response[body]`))
 	for _, val := range req.Form[`response[headers][]`] {
-		stub.ResponseParsed.Headers = append(stub.ResponseParsed.Headers, string(val))
+		arr := strings.SplitN(string(val), `:`, 2)
+		if len(arr) == 2 {
+			h := strings.TrimSpace(arr[0]) + `: ` + strings.TrimSpace(arr[1])
+
+			stub.ResponseParsed.Headers = append(stub.ResponseParsed.Headers, h)
+		} else {
+			fmt.Println(`Skipping broken response header`, val, `for`, req.RequestURI)
+		}
+
 	}
+	sort.Strings(stub.ResponseParsed.Headers) // sort headers to easily check them later
 
 	stub.Encode()
 
 	return stub
+}
+
+// HasHeader check if header exists
+func containsHeader(name string, value string, headers http.Header) bool {
+	for vKey, vVals := range headers {
+		for _, v := range vVals {
+			if vKey == name && v == value {
+				return true
+			}
+		}
+	}
+
+	return false
 }
