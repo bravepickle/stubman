@@ -12,8 +12,9 @@ const stubTable = `stub`
 const defaultRequestMethod = `ANY`
 
 type ResponseStub struct {
-	Headers []string
-	Body    string
+	Headers    []string
+	Body       string
+	StatusCode int
 }
 
 type RequestStub struct {
@@ -189,7 +190,9 @@ func NewStubRepo(db *Db) *StubRepo {
 
 func NewNullObjectStub() *Stub {
 	return &Stub{
-		RequestMethod: defaultRequestMethod,
-		RequestParsed: RequestStub{Headers: []string{`Content-Type: application/json`}},
-		Request:       `{"headers": ["Content-Type: application/json"], "body":""}`}
+		RequestMethod:  defaultRequestMethod,
+		RequestParsed:  RequestStub{Headers: []string{`Content-Type: application/json`}},
+		Request:        `{"headers": ["Content-Type: application/json"], "body":""}`,
+		Response:       `{"headers": null, "body":""}`,
+		ResponseParsed: ResponseStub{StatusCode: 200}}
 }

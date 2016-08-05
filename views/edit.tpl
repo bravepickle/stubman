@@ -73,6 +73,10 @@
 
 <fieldset>
 <legend>Response</legend>
+<div class="form-group">
+  <label for="model-status_code">Return Status Code</label>
+  <input type="text" class="form-control" value="{{ .Data.ResponseParsed.StatusCode }}" id="model-status_code" name="resposne[status_code]" placeholder="Status Code">
+</div>
 <div class="headers-group form-group">
 	<label for="response-headers">Response Headers</label>
 	<div id="response-headers" class="headers-list">

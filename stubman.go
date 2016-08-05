@@ -224,6 +224,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 					}
 				}
 
+				w.WriteHeader(model.ResponseParsed.StatusCode)
 				w.Write([]byte(model.ResponseParsed.Body))
 
 				go func(id int64) { viewsStmt.Exec(id) }(model.Id) // non-blocking mode for update views
@@ -243,6 +244,7 @@ func NewStubFromRequest(req *http.Request) *Stub {
 		stub.RequestParsed.Headers = append(stub.RequestParsed.Headers, string(val))
 	}
 
+	stub.ResponseParsed.StatusCode, _ = strconv.Atoi(strings.TrimSpace(req.Form.Get(`resposne[status_code]`)))
 	stub.ResponseParsed.Body = string(req.Form.Get(`response[body]`))
 	for _, val := range req.Form[`response[headers][]`] {
 		stub.ResponseParsed.Headers = append(stub.ResponseParsed.Headers, string(val))
