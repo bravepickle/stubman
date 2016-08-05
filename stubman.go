@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -182,21 +183,52 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		log.Fatalln(err.Error())
 	}
 
+	searchStmt, err := repo.PrepareSelectStubByRequest()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
 	// handle the rest of URIs
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		if !Config.Stubman.Disabled {
+		if Config.Stubman.Disabled {
 			w.Write([]byte(`Successfully received request: ` + req.Method + ` ` + req.URL.String()))
 		} else {
-			w.Header().Set(`X-Stubman-Page`, `true`)
+			found, err := searchStmt.Query(req.Method, req.RequestURI)
+			if err != nil {
+				log.Println(req.RequestURI, `: `, err.Error())
+				return
+			}
 
-			w.WriteHeader(http.StatusNotFound)
+			model := Stub{}
+			for found.Next() {
+				if err := found.Scan(&model.Id, &model.Name, &model.Response); err != nil {
+					log.Println(req.RequestURI, `: `, err.Error())
+					return
+				}
+				model.Decode()
+			}
 
-			page := PageError{Title: `404 Not Found`, Message: `Page "` + req.URL.String() + `" not found`}
-			RenderErrorPage(`error.tpl`, page, w)
+			if model.Id == 0 {
+				w.Header().Set(`X-Stubman-Page`, `true`)
+				w.WriteHeader(http.StatusNotFound)
+
+				page := PageError{Title: `404 Not Found`, Message: `Page "` + req.URL.String() + `" not found`}
+				RenderErrorPage(`error.tpl`, page, w)
+			} else {
+				for _, h := range model.ResponseParsed.Headers {
+					arr := strings.SplitN(h, `:`, 2)
+					if len(arr) == 2 {
+						w.Header().Add(strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1]))
+					} else {
+						fmt.Println(`Skipping broken header`, h, `for`, req.RequestURI)
+					}
+				}
+
+				w.Write([]byte(model.ResponseParsed.Body))
+
+				go func(id int64) { viewsStmt.Exec(id) }(model.Id) // non-blocking mode for update views
+			}
 		}
-
-		// TODO: add check logic + views increment
-		viewsStmt.Exec(1)
 	})
 }
 

@@ -174,6 +174,11 @@ func (r *StubRepo) PrepareUpdateView() (*sql.Stmt, error) {
 	return r.Conn.Prepare("UPDATE stub SET last_viewed=DATETIME('now'), views=views+1 WHERE id = ?")
 }
 
+// Update model views
+func (r *StubRepo) PrepareSelectStubByRequest() (*sql.Stmt, error) {
+	return r.Conn.Prepare("SELECT id, name, response FROM stub WHERE (request_method = $1 OR request_method = 'ANY') AND request_uri = $2 LIMIT 1")
+}
+
 func NewStubRepo(db *Db) *StubRepo {
 	if db == nil {
 		db = DefaultDb
