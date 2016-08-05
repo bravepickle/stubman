@@ -1,5 +1,5 @@
 # stubman
-Stub service written in Golang
+Stub service written in Golang. Quick way to handle responses when target server is not ready yet. Contains WEB GUI for editing stubs
 
 ## Usage
 Command usage
@@ -24,9 +24,9 @@ Options:
 Arguments:
   config:init
     	initialize example config for running application. If file exists, then it will be reset to defaults
-  stubman:db:init
+  db:init
     	initialize DB. If it exists, then DB will be reset
-  stubman:db:import <file.sql>
+  db:import <file.sql>
     	import data from SQL file to DB. Second argument must be present with file path
 
 Example:
@@ -34,19 +34,10 @@ Example:
 
 ```
 
-Default URL: http://localhost:3000
-
-It is optimize-wise to serve static files by web server before Midway App, especially in high-load project. /stubman/static should be served by Midway app
-
 ## Features
-- log requests in CLI CURL format
-- can work as a reverse proxy
-- can work as stub service using Stubman
+- can work as stub service
 - uses (SQLite)[http://github.com/mattn/go-sqlite3] as DB storage for stubman
-
-## Stubman
-*Stubman* - response stubbing functionality with GUI interface
-http://localhost:3000/stubman - entrypoint for handling stub service requests and responses
+- has WEB GUI for Stubs CRUD operations
 
 
 ## TODOs
@@ -69,3 +60,4 @@ http://localhost:3000/stubman - entrypoint for handling stub service requests an
 - add to config optional preconditions to start logging requests and responses, using RegEx
 - in Stubman add button to generate CURL request for given stub
 - log time taken for handling requests
+- support method ANY which skips matching

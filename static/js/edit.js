@@ -15,15 +15,22 @@ function initEdit() {
 	
 	var method = $('#model-request_method')
 	var req_container = $('#request_body_container')
-	if (method.val() == 'GET') {
-		req_container.hide()
+	if (method.val() == 'GET' || method.val() == 'ANY') {
+//		req_container.hide()
+//		req_container.find('textarea').val('')
+		req_container.find('textarea').attr('disabled', 'disabled')
+	} else {
+		req_container.find('textarea').removeAttr('disabled')
 	}
 	method.change(function(e) {
 		e.preventDefault();
-		if (method.val() == 'GET') {
-			req_container.hide()
+		if (method.val() == 'GET' || method.val() == 'ANY') {
+//			req_container.hide()
+//			req_container.find('textarea').val('')
+			req_container.find('textarea').attr('disabled', 'disabled')
 		} else {
-			req_container.show()
+			req_container.find('textarea').removeAttr('disabled')
+//			req_container.show()
 		}
 	});
 	

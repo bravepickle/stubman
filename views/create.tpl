@@ -1,12 +1,12 @@
 {{ define "title"}}<title>Stubman | Stub Create</title>{{ end }}
-{{ define "content"}}<h1>Stub Create</h1>
+{{ define "content"}}<h2>Stub Create</h2>
 
 <form method="POST" class="stub-form">
 <fieldset>
 <legend>Basic</legend>
   <div class="form-group">
     <label for="model-name">Name</label>
-    <input type="text" class="form-control" value="{{.Data.Name}}" id="model-name" name="name" placeholder="Name">
+    <input type="text" class="form-control" value="{{.Data.Name}}" id="model-name" name="stub_name" placeholder="Name">
   </div>
 </fieldset>
 
@@ -15,7 +15,7 @@
   <div class="form-group">
     <label for="model-request_method">Request Method</label>
 	<select  class="form-control" id="model-request_method" name="request_method">
-	  <option {{ if eq .Data.RequestMethod `` }} selected="selected" {{end}}></option>
+	  <option {{ if eq .Data.RequestMethod `ANY` }} selected="selected" {{end}}>ANY</option>
 	  <option {{ if eq .Data.RequestMethod `GET` }} selected="selected" {{end}}>GET</option>
 	  <option {{ if eq .Data.RequestMethod `POST` }} selected="selected" {{end}}>POST</option>
 	  <option {{ if eq .Data.RequestMethod `PUT` }} selected="selected" {{end}}>PUT</option>

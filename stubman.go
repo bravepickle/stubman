@@ -60,6 +60,8 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		if req.Method == `POST` {
 			req.ParseForm()
 			stub := NewStubFromRequest(req)
+			stub.Created = time.Now()
+			stub.LastViewed = time.Now() // let's think that init of stub sets date to creation date
 
 			id, err := repo.Insert(stub)
 			if err != nil {
@@ -120,8 +122,6 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			req.ParseForm()
 			stub := NewStubFromRequest(req)
 			stub.Id = int64(idNum)
-
-			fmt.Printf("Model: %v\n", stub)
 
 			err := repo.Update(stub)
 			if err != nil {
@@ -185,7 +185,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	// handle the rest of URIs
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		if !Config.Stubman.Disabled {
-			w.Write(`Successfully received request: ` + req.Method + ` ` + req.URL.String())
+			w.Write([]byte(`Successfully received request: ` + req.Method + ` ` + req.URL.String()))
 		} else {
 			w.Header().Set(`X-Stubman-Page`, `true`)
 
@@ -196,14 +196,14 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		}
 
 		// TODO: add check logic + views increment
-		//		viewsStmt.Exec(1)
+		viewsStmt.Exec(1)
 	})
 }
 
 func NewStubFromRequest(req *http.Request) *Stub {
-	stub := &Stub{Created: time.Now()}
+	stub := &Stub{}
 
-	stub.Name = string(req.Form.Get(`name`))
+	stub.Name = string(req.Form.Get(`stub_name`))
 	stub.RequestMethod = string(req.Form.Get(`request_method`))
 	stub.RequestUri = string(req.Form.Get(`request_uri`))
 	stub.RequestParsed.Body = string(req.Form.Get(`request[body]`))

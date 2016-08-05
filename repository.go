@@ -9,6 +9,7 @@ import (
 )
 
 const stubTable = `stub`
+const defaultRequestMethod = `ANY`
 
 type ResponseStub struct {
 	Headers []string
@@ -139,8 +140,9 @@ func (r *StubRepo) Delete(id int) (bool, error) {
 // Insert model
 func (r *StubRepo) Insert(model *Stub) (int64, error) {
 	var id int64
-	result, err := r.Conn.Exec("INSERT INTO stub (name, request_method, request_uri, request, response, created) "+
-		"VALUES (?, ?, ?, ?, ?, ?)",
+	result, err := r.Conn.Exec("INSERT INTO stub "+
+		"(name, request_method, request_uri, request, response, created, last_viewed, views) "+
+		"VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		model.Name, model.RequestMethod, model.RequestUri, model.Request,
 		model.Response, model.Created.Format("2006-01-02 15:04:05"),
 		model.LastViewed.Format("2006-01-02 15:04:05"), model.Views)
@@ -182,7 +184,7 @@ func NewStubRepo(db *Db) *StubRepo {
 
 func NewNullObjectStub() *Stub {
 	return &Stub{
-		RequestMethod: `GET`,
+		RequestMethod: defaultRequestMethod,
 		RequestParsed: RequestStub{Headers: []string{`Content-Type: application/json`}},
 		Request:       `{"headers": ["Content-Type: application/json"], "body":""}`}
 }

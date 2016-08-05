@@ -8,6 +8,7 @@
 		<th>Name</th>
 		<th>Method</th>
 		<th>URI</th>
+		<th>Created</th>
 		<th>Last Viewed</th>
 		<th>Views</th>
 		<th>Actions</th>
@@ -20,6 +21,7 @@
 		<td>{{.Name}}</td>
 		<td>{{.RequestMethod}}</td>
 		<td>{{.RequestUri}}</td>
+		<td>{{.Created}}</td>
 		<td>{{.LastViewed}}</td>
 		<td>{{.Views}}</td>
 		<td>
