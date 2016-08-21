@@ -177,7 +177,7 @@ func (r *StubRepo) PrepareUpdateView() (*sql.Stmt, error) {
 
 // Update model views
 func (r *StubRepo) PrepareSelectStubByRequest() (*sql.Stmt, error) {
-	return r.Conn.Prepare("SELECT id, name, response, request FROM stub WHERE (request_method = $1 OR request_method = 'ANY') AND request_uri = $2 LIMIT 1")
+	return r.Conn.Prepare("SELECT id, name, request_uri, request_method, response, request FROM stub WHERE (request_method = $1 OR request_method = 'ANY') AND request_uri LIKE $2")
 }
 
 func NewStubRepo(db *Db) *StubRepo {

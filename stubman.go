@@ -5,7 +5,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	//	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -116,7 +115,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				return
 			}
 
-			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), id))
+			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), model.Id))
 			w.WriteHeader(http.StatusFound)
 
 			return
