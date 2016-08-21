@@ -5,7 +5,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	//	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -23,6 +23,8 @@ type pathConcat struct {
 	prefix string
 }
 
+var repo *StubRepo
+
 // fullpath append prefix and path
 func (p *pathConcat) fullPath(path string) string {
 	buf := bytes.NewBufferString(p.prefix)
@@ -39,7 +41,7 @@ func init() {
 func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	//	if Config.
 	pcat := pathConcat{prefix}
-	repo := NewStubRepo(nil)
+	repo = NewStubRepo(nil)
 
 	// list all stubs
 	mux.HandleFunc(pcat.fullPath(`/`), func(w http.ResponseWriter, req *http.Request) {
@@ -88,44 +90,17 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	// edit
 	mux.HandleFunc(pcat.fullPath(`/edit/`), func(w http.ResponseWriter, req *http.Request) {
 		id := pathRegId.FindString(req.URL.Path)
-		if id == `` {
-			w.Write([]byte(`Not Found`))
-			w.WriteHeader(http.StatusNotFound)
-
-			return
-		}
-
-		idNum, err := strconv.Atoi(id)
-		if err != nil {
-			log.Println(err.Error())
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusBadRequest)
-
-			return
-		}
-
-		model, err := repo.Find(idNum)
-		if err != nil {
-			log.Println(err.Error())
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusBadRequest)
-
-			return
-		}
-
-		if model.Id == 0 {
-			w.Write([]byte(`Not Found`))
-			w.WriteHeader(http.StatusNotFound)
-
+		model, ok := stubById(id, w, req)
+		if !ok {
 			return
 		}
 
 		if req.Method == `POST` {
 			req.ParseForm()
-			stub := NewStubFromRequest(req)
-			stub.Id = int64(idNum)
+			var err error
 
-			err := repo.Update(stub)
+			stub := NewStubFromRequest(req)
+			stub.Id, err = strconv.ParseInt(id, 10, 64)
 			if err != nil {
 				w.Write([]byte(err.Error()))
 				w.WriteHeader(http.StatusBadRequest)
@@ -133,7 +108,15 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				return
 			}
 
-			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), idNum))
+			err = repo.Update(stub)
+			if err != nil {
+				w.Write([]byte(err.Error()))
+				w.WriteHeader(http.StatusBadRequest)
+
+				return
+			}
+
+			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), id))
 			w.WriteHeader(http.StatusFound)
 
 			return
@@ -146,23 +129,12 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	// delete
 	mux.HandleFunc(pcat.fullPath(`/delete/`), func(w http.ResponseWriter, req *http.Request) {
 		id := pathRegId.FindString(req.URL.Path)
-		if id == `` {
-			w.Write([]byte(`Not Found`))
-			w.WriteHeader(http.StatusNotFound)
-
+		model, ok := stubById(id, w, req)
+		if !ok {
 			return
 		}
 
-		idNum, err := strconv.Atoi(id)
-		if err != nil {
-			log.Println(err.Error())
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusBadRequest)
-
-			return
-		}
-
-		deleted, err := repo.Delete(idNum)
+		deleted, err := repo.Delete(model.Id)
 		if err != nil {
 			log.Println(err.Error())
 			w.Write([]byte(err.Error()))
@@ -177,6 +149,27 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		} else {
 			w.WriteHeader(http.StatusNoContent)
 		}
+	})
+
+	// copy
+	mux.HandleFunc(pcat.fullPath(`/copy/`), func(w http.ResponseWriter, req *http.Request) {
+		id := pathRegId.FindString(req.URL.Path)
+		model, ok := stubById(id, w, req)
+		if !ok {
+			return
+		}
+
+		model.Name = model.Name + ` copy`
+		newId, err := repo.Insert(model) // create from existing stub new one
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			w.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
+
+		w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), newId))
+		w.WriteHeader(http.StatusFound)
 	})
 
 	viewsStmt, err := repo.PrepareUpdateView()
@@ -194,53 +187,17 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		if Config.Stubman.Disabled {
 			w.Write([]byte(`Successfully received request: ` + req.Method + ` ` + req.URL.String()))
 		} else {
-			found, err := searchStmt.Query(req.Method, req.RequestURI)
+			model, err := selectStub(req, searchStmt)
 			if err != nil {
-				log.Println(req.RequestURI, `: `, err.Error())
+				w.Write([]byte(`Internal Server Error: ` + err.Error()))
+				w.WriteHeader(http.StatusInternalServerError)
 
 				return
 			}
 
-			model := Stub{}
-			for found.Next() {
-				if err := found.Scan(&model.Id, &model.Name, &model.Response, &model.Request); err != nil {
-					log.Println(req.RequestURI, `: `, err.Error())
-
-					return
-				}
-
-				model.Decode()
-			}
-
-			if model.Id == 0 {
+			if model == nil || model.Id == 0 {
 				show404ErrorPage(w, req)
 			} else {
-				// check if headers are set
-				if len(model.RequestParsed.Headers) > 0 {
-					for _, h := range model.RequestParsed.Headers {
-						arr := strings.SplitN(h, `:`, 2)
-						if !containsHeader(strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1]), req.Header) {
-							show404ErrorPage(w, req)
-
-							return
-						}
-					}
-				}
-
-				body, err := ioutil.ReadAll(req.Body)
-				if err != nil {
-					log.Println(req.RequestURI, `:`, err.Error())
-					return
-				}
-
-				if req.Method != `GET` && req.Method != `ANY` && model.RequestParsed.Body != `` {
-					if string(body) != model.RequestParsed.Body {
-						show404ErrorPage(w, req)
-
-						return
-					}
-				}
-
 				for _, h := range model.ResponseParsed.Headers {
 					arr := strings.SplitN(h, `:`, 2)
 					w.Header().Add(strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1]))
@@ -249,10 +206,49 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				w.WriteHeader(model.ResponseParsed.StatusCode)
 				w.Write([]byte(model.ResponseParsed.Body))
 
+				log.Println(`======== RESPONSE MODEL `, model)
+				log.Println(`======== RESPONSE BODY `, model.ResponseParsed.Body)
+
 				go viewsStmt.Exec(model.Id) // non-blocking mode for update views
 			}
 		}
 	})
+}
+
+func stubById(id string, w http.ResponseWriter, req *http.Request) (*Stub, bool) {
+	if id == `` {
+		w.Write([]byte(`Not Found`))
+		w.WriteHeader(http.StatusNotFound)
+
+		return nil, false
+	}
+
+	idNum, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Println(err.Error())
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(http.StatusBadRequest)
+
+		return nil, false
+	}
+
+	model, err := repo.Find(idNum)
+	if err != nil {
+		log.Println(err.Error())
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(http.StatusBadRequest)
+
+		return model, false
+	}
+
+	if model.Id == 0 {
+		w.Write([]byte(`Not Found`))
+		w.WriteHeader(http.StatusNotFound)
+
+		return model, false
+	}
+
+	return model, true
 }
 
 func show404ErrorPage(w http.ResponseWriter, r *http.Request) {

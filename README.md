@@ -61,3 +61,4 @@ Example:
 - in Stubman add button to generate CURL request for given stub
 - log time taken for handling requests
 - support method ANY which skips matching
+- modify headers on save and keep as little as possible modifications on request handling

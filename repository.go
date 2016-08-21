@@ -97,7 +97,7 @@ func (r *StubRepo) FindAll() ([]Stub, error) {
 }
 
 // Find find model by ID
-func (r *StubRepo) Find(id int) (*Stub, error) {
+func (r *StubRepo) Find(id int64) (*Stub, error) {
 	model := Stub{}
 
 	rows, err := r.Conn.Query("SELECT id, name, request_method, "+
@@ -124,7 +124,7 @@ func (r *StubRepo) Find(id int) (*Stub, error) {
 }
 
 // Delete model by ID
-func (r *StubRepo) Delete(id int) (bool, error) {
+func (r *StubRepo) Delete(id int64) (bool, error) {
 	result, err := r.Conn.Exec("DELETE FROM stub WHERE id = $1", id)
 	if err != nil {
 		return false, err
