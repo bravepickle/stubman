@@ -55,6 +55,8 @@ func SortByRequest(req *http.Request, stubs *[]Stub) {
 func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err error) {
 	found, err := searchStmt.Query(req.Method, req.RequestURI+`%`)
 
+	log.Println(` ------- SEARCH: `, req.Method, req.RequestURI+`%`)
+
 	if err != nil {
 		log.Println(req.RequestURI, `: `, err.Error())
 
@@ -83,11 +85,18 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 		}
 	}
 
-	if len(stubs) > 1 {
+	stubsNum := len(stubs)
+	if stubsNum > 1 {
 		SortByRequest(req, &stubs)
 
+		log.Println(` ------- Found: `, stubs[0].Id, req.Method, req.RequestURI+`%`)
+
+		return &stubs[0], nil
+	} else if stubsNum == 1 {
 		return &stubs[0], nil
 	}
+
+	log.Println(` ------- NOT FOUND: `, stubs)
 
 	return selected, nil
 }

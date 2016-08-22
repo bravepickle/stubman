@@ -82,7 +82,7 @@
 	<div id="response-headers" class="headers-list">
 	{{range .Data.ResponseParsed.Headers}}
 		<div>
-			<input class="form-control" name="request[headers][]" placeholder="Content-Type: application/json" type=text value="{{.}}" /> 
+			<input class="form-control" name="response[headers][]" placeholder="Content-Type: application/json" type=text value="{{.}}" /> 
 			<a href="#2" class="btn-del-header"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
 		</div>
 	{{end}}
