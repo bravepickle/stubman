@@ -38,3 +38,7 @@
 .stub-form fieldset {
 	padding-bottom: 30px;
 }
+
+.stub-form textarea {
+	min-height: 200px;
+}
