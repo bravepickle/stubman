@@ -46,6 +46,11 @@ func main() {
 		fmt.Println(`Debug enabled`)
 	}
 
+	if _, err := NewDb(Config.Stubman.Db.DbName, true); err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		return
+	}
+
 	mux := http.NewServeMux()
 	err := initStubman(mux)
 	if err != nil {
@@ -53,6 +58,14 @@ func main() {
 		return
 	}
 
+	if Debug {
+		fmt.Printf("Listening to: %s\n", Config.App.String())
+	}
+
+	http.ListenAndServe(Config.App.String(), mux)
+}
+
+func initStaticHandlers(mux *http.ServeMux) {
 	//favicon
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, `favicon.ico`)
@@ -66,25 +79,12 @@ func main() {
 	mux.HandleFunc("/stubman/static/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, r.URL.Path[prefixLen:])
 	})
-
-	if Debug {
-		fmt.Printf("Listening to: %s\n", Config.App.String())
-	}
-
-	http.ListenAndServe(Config.App.String(), mux)
 }
 
-// init Stubman
+// init Stubman handlers
 func initStubman(mux *http.ServeMux) error {
-	_, err := NewDb(Config.Stubman.Db.DbName, true)
-	if err != nil {
-		return err
-	}
-
+	initStaticHandlers(mux)
 	AddStubmanCrudHandlers(prefixPathStubman, mux)
-
-	// forward all static files to directory
-	//	n.Use(negroni.NewStatic(http.Dir(``)))
 
 	if Debug {
 		fmt.Printf("Stubman path: http://%s%s/\n", Config.App.String(), prefixPathStubman)
