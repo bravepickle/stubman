@@ -203,7 +203,9 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				}
 
 				w.WriteHeader(model.ResponseParsed.StatusCode)
-				w.Write([]byte(model.ResponseParsed.Body))
+				if req.Method != http.MethodHead { // body show only if not method HEAD
+					w.Write([]byte(model.ResponseParsed.Body))
+				}
 
 				log.Println(`======== RESPONSE MODEL `, model)
 				log.Println(`======== RESPONSE BODY `, model.ResponseParsed.Body)
