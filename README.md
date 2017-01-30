@@ -1,5 +1,5 @@
 # stubman
-Stub service written in Golang. Quick way to handle responses when target server is not ready yet. Contains WEB GUI for editing stubs
+HTTP stub service written in Golang. Quick way to handle HTTP responses when target server is not ready yet. Contains WEB GUI for editing stubs
 
 ## Usage
 Command usage
