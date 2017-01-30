@@ -24,7 +24,6 @@ _testmain.go
 *.prof
 stubman
 config.yaml
-data.sqlite
 stub.sql
 *.log
-test_db.sqlite
+*.sqlite

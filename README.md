@@ -62,3 +62,13 @@ Example:
 - log time taken for handling requests
 - support method ANY which skips matching
 - modify headers on save and keep as little as possible modifications on request handling
+
+## Usage Examples
+GUI Add Page
+![GUI Add Page](https://d1ro8r1rbfn3jf.cloudfront.net/ms_64293/t6tH2JisLEOnjy2GabVQJz1zcfpcdA/Stubman%2B%257C%2BStub%2BEdit%2B%25231%2B2017-01-30%2B10%2BAM10-13-40.png?Expires=1485850432&Signature=LQhq8FSePnYMh7cEDP316MGr0o~p5FKhLMB6qLp8pJyGRnvZGVK25M5nDRUxs1OGv70jnETfb-RUx34s0Zq3j82NfMb1uS3RQBPiyns163CwM1ZwQNFxU~-pVjq4g6lYhyw0ZCoGXvA2PdQJToTrYsKlVLTyrf9GcWa2x-2qrwKgZo1HGXbbj9RM52LCV2udjR22Dfe0-70f5BnYf2ZEDAoxnxSiqpYaWrRhsVhRnpMQHFQzgScIvcPsLV5LcigNAMOJKfaPE5PMOfhGUiWTOqkLuBHIvzCsWP0UM9eML0h61PGXL9u2RJWCKYlMExwcM3Jbpgj-~xJ40rNMmXH7dg__&Key-Pair-Id=APKAJHEJJBIZWFB73RSA)
+
+GUI Listing Page
+![GUI Listing Page](https://d1ro8r1rbfn3jf.cloudfront.net/ms_64293/WwkjX6BEW9dQi5kjRdjwIojhRq7Fyk/Stubman%2B%257C%2BStubs%2BList%2B2017-01-30%2B10%2BAM10-15-14.png?Expires=1485850701&Signature=DTRVdaj0APBbYy6xLe3h7uwmh6ON61hK7z~1Mw-4bsPaB8~dks9gW4bmRTa9b6IDuTbIlOCcZxmItF-TKWKVN0FVZOh-B6uoXSdIqrgG1QMH~EKcF-0WatZPrLa6rXopT3FvRbscXVTc8YeIoCl16NDf4rnoA7NCc9MFwxjOIZlpgqDJATOm-KlPZKoK1fde06ebSSNKFWeYSa0k0QrueRwcGqGowhkz4s9tCl9sFOk1MyckCxRh514xUiC45-wIjAVSqzh8xirv7Hlzhq5tnefjFxwQYFDoyIgXHPHEXhmJYJlUs-2938qI1ZPzP54gNH~XnjFHZvRJLi6NOcnR5w__&Key-Pair-Id=APKAJHEJJBIZWFB73RSA)
+
+Stub Example Results Page
+![Stub Example Results Page](https://d1ro8r1rbfn3jf.cloudfront.net/ms_64293/1hnfjFAgFAQfIKkCCdE84jaoX05x68/Hello%252C%2BWorld%2521%2B2017-01-30%2B10%2BAM10-14-27.png?Expires=1485850481&Signature=dPiftD~7zESmSQ7QM0r61fv4U7KZ7eHXhNcAIP3XURogMrHautBpHxulbDr43~8v7Ruxj5QKVFp4EbvQK9ynqKcXCeO1Teo4xcqsu1dNtpxIhXtVQq0qREl874dQ0X6-UVTZp4C-0W9OxJxRcsrnknrNS~NZwgTLckimCJ-ufbi~4f2xZXkVkzDbl0c93RKjJikzTcHLbe33V~gVq8O1axf8oYIuz4mTBFzE3hKiiFeafaE6pizgxNUL2mMsT~xDSH-acCzAytumaTe0oQGZ12uIt0zRkdB6ctGh-iZ84AY29WBCbiibimSj~wLH9Z2cHH-yVrzHvynZDdztjmqGnw__&Key-Pair-Id=APKAJHEJJBIZWFB73RSA)
