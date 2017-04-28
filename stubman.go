@@ -32,10 +32,6 @@ func (p *pathConcat) fullPath(path string) string {
 	return buf.String()
 }
 
-func init() {
-	InitTemplates()
-}
-
 // AddGuiHandlers add all handlers for income requests that come to stub service
 func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	//	if Config.

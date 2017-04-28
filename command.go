@@ -20,7 +20,7 @@ stubman:
 `
 
 func printAppUsage() {
-	fmt.Fprintln(os.Stderr, "Web middleware app to log, proxy requests etc.\n")
+	fmt.Fprintln(os.Stderr, "HTTP stub service.\n")
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] [arg]\n\n", os.Args[0])
 	fmt.Fprintln(os.Stderr, `Options:`)
 

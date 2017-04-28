@@ -46,6 +46,8 @@ func main() {
 		fmt.Println(`Debug enabled`)
 	}
 
+	InitTemplates()
+
 	if _, err := NewDb(Config.Stubman.Db.DbName, true); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		return
@@ -68,16 +70,16 @@ func main() {
 func initStaticHandlers(mux *http.ServeMux) {
 	//favicon
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, `favicon.ico`)
+		http.ServeFile(w, r, Config.App.BasePath + `/favicon.ico`)
 	})
 
 	mux.HandleFunc("/favicon.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, `favicon.png`)
+		http.ServeFile(w, r, Config.App.BasePath + `/favicon.png`)
 	})
 
 	prefixLen := len(prefixPathStubman) + 1
 	mux.HandleFunc("/stubman/static/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, r.URL.Path[prefixLen:])
+		http.ServeFile(w, r, Config.App.BasePath + `/` + r.URL.Path[prefixLen:])
 	})
 }
 
@@ -87,7 +89,7 @@ func initStubman(mux *http.ServeMux) error {
 	AddStubmanCrudHandlers(prefixPathStubman, mux)
 
 	if Debug {
-		fmt.Printf("Stubman path: http://%s%s/\n", Config.App.String(), prefixPathStubman)
+		fmt.Printf("Stubman path: http://%s%s/\nBase path: %s\n", Config.App.String(), prefixPathStubman, Config.App.BasePath)
 	}
 
 	return nil

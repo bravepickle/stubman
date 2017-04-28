@@ -47,8 +47,8 @@ func InitTemplates() {
 	tplNames := []string{`index.tpl`, `edit.tpl`, `create.tpl`, `error.tpl`}
 	parsedTemplates = make(map[string]*template.Template)
 	sep := string(filepath.Separator)
-	viewsPrefix := viewsDir + sep
 
+	viewsPrefix := Config.App.BasePath + `/` + viewsDir + sep
 	for _, name := range tplNames {
 		parsed, err := template.ParseFiles(viewsPrefix+name, viewsPrefix+baseTemplate)
 		parsedTemplates[name] = template.Must(parsed, err)

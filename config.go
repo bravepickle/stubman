@@ -35,6 +35,7 @@ func (t *DbConfigStruct) String() string {
 type AppConfigStruct struct {
 	Port string
 	Host string
+	BasePath string `yaml:"base_path"`
 }
 
 func (t *AppConfigStruct) String() string {

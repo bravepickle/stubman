@@ -5,11 +5,11 @@ HTTP stub service written in Golang. Quick way to handle HTTP responses when tar
 Command usage
 
 ```
-$ midway -help
+$ stubman -help
 
-Web middleware app to log, proxy requests etc.
+HTTP stub service.
 
-Usage: midway [options] [arg]
+Usage: stubman [options] [arg]
 
 Options:
   -debug
@@ -18,8 +18,6 @@ Options:
     	Path to config file in YAML format (default "./config.yaml")
   -help
     	Print command usage help
-  -httptest.serve string
-    	if non-empty, httptest.NewServer serves on this address and blocks
 
 Arguments:
   config:init
@@ -30,13 +28,14 @@ Arguments:
     	import data from SQL file to DB. Second argument must be present with file path
 
 Example:
-  midway config:init
+  stubman config:init
 
 ```
 
 ## Features
 - can work as stub service
 - uses (SQLite)[http://github.com/mattn/go-sqlite3] as DB storage for stubman
+- uses (YAML)[http://gopkg.in/yaml.v2] as config parser for stubman
 - has WEB GUI for Stubs CRUD operations
 
 
