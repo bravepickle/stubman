@@ -4,7 +4,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	//	"strings"
 	"time"
 )
 
@@ -191,8 +190,8 @@ func NewStubRepo(db *Db) *StubRepo {
 func NewNullObjectStub() *Stub {
 	return &Stub{
 		RequestMethod:  defaultRequestMethod,
-		RequestParsed:  RequestStub{Headers: []string{`Content-Type: application/json`}},
-		Request:        `{"headers": ["Content-Type: application/json"], "body":""}`,
-		Response:       `{"headers": null, "body":""}`,
-		ResponseParsed: ResponseStub{StatusCode: 200}}
+		RequestParsed:  RequestStub{},
+		Request:       `{"headers": null, "body":""}`,
+		Response:        `{"headers": ["Content-Type: application/json"], "body":""}`,
+		ResponseParsed: ResponseStub{StatusCode: 200, Headers: []string{`Content-Type: application/json`}}}
 }
