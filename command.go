@@ -9,8 +9,9 @@ import (
 
 const appConfigExample = `# common application settings
 app:
-  host: null # any host will be checked
-  port: 3001 # port to listen to
+  host: null   # any host will be checked
+  port: 3001   # port to listen to
+  base_path: . # base path to project templates, configs, etc.
 
 stubman:
   disabled: false
