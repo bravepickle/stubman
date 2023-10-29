@@ -191,7 +191,7 @@ func NewNullObjectStub() *Stub {
 	return &Stub{
 		RequestMethod:  defaultRequestMethod,
 		RequestParsed:  RequestStub{},
-		Request:       `{"headers": null, "body":""}`,
-		Response:        `{"headers": ["Content-Type: application/json"], "body":""}`,
+		Request:        `{"headers": null, "body":""}`,
+		Response:       `{"headers": ["Content-Type: application/json"], "body":""}`,
 		ResponseParsed: ResponseStub{StatusCode: 200, Headers: []string{`Content-Type: application/json`}}}
 }

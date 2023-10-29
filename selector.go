@@ -11,7 +11,7 @@ import (
 )
 
 // ByBestRequestMatch sort stubs by best matches to given request
-//type []Stub
+// type []Stub
 type ByBestRequestMatch struct {
 	stubs   []Stub
 	request *http.Request

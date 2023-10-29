@@ -33,8 +33,8 @@ func (t *DbConfigStruct) String() string {
 
 // AppConfigStruct contain common application settings
 type AppConfigStruct struct {
-	Port string
-	Host string
+	Port     string
+	Host     string
 	BasePath string `yaml:"base_path"`
 }
 
