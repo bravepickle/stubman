@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<link rel="icon" type="image/png" href="/favicon.png">
+	<link rel="icon" type="image/png" href="{{ .BaseUri }}/favicon.png">
 	
 	<!-- bootstrap -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,7 +20,7 @@
 		<p>Go to <a href="{{ .BaseUri }}/stubman/">home page</a></li></p>
 	
 	<footer class="main-footer navbar navbar-fixed-bottom">
-	Victor K&copy; 2016
+	Victor K&copy; 2023
 	</footer>
 	</div>
 </body>

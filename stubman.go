@@ -25,9 +25,13 @@ type pathConcat struct {
 var repo *StubRepo
 
 // fullpath append prefix and path
-func (p *pathConcat) fullPath(path string) string {
+func (p *pathConcat) fullPath(path string, absolute bool) string {
 	buf := bytes.NewBufferString(p.prefix)
 	buf.WriteString(path)
+
+	if absolute {
+		return Config.App.BaseUri + buf.String()
+	}
 
 	return buf.String()
 }
@@ -39,7 +43,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	repo = NewStubRepo(nil)
 
 	// list all stubs
-	mux.HandleFunc(pcat.fullPath(`/`), func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc(pcat.fullPath(`/`, false), func(w http.ResponseWriter, req *http.Request) {
 		models, err := repo.FindAll()
 
 		if err != nil {
@@ -55,7 +59,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	})
 
 	// create
-	mux.HandleFunc(pcat.fullPath(`/create/`), func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc(pcat.fullPath(`/create/`, false), func(w http.ResponseWriter, req *http.Request) {
 		if req.Method == `POST` {
 			req.ParseForm()
 			stub := NewStubFromRequest(req)
@@ -70,7 +74,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				return
 			}
 
-			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`%s/edit/%d`), Config.App.BaseUri, id))
+			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`, true), id))
 			w.WriteHeader(http.StatusFound)
 
 			return
@@ -83,7 +87,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 
 	pathRegId := regexp.MustCompile(`\d+$`)
 	// edit
-	mux.HandleFunc(pcat.fullPath(`/edit/`), func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc(pcat.fullPath(`/edit/`, false), func(w http.ResponseWriter, req *http.Request) {
 		id := pathRegId.FindString(req.URL.Path)
 		model, ok := stubById(id, w, req)
 		if !ok {
@@ -111,7 +115,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				return
 			}
 
-			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`%s/edit/%d`), Config.App.BaseUri, model.Id))
+			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`, true), model.Id))
 			w.WriteHeader(http.StatusFound)
 
 			return
@@ -122,7 +126,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	})
 
 	// delete
-	mux.HandleFunc(pcat.fullPath(`/delete/`), func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc(pcat.fullPath(`/delete/`, false), func(w http.ResponseWriter, req *http.Request) {
 		id := pathRegId.FindString(req.URL.Path)
 		model, ok := stubById(id, w, req)
 		if !ok {
@@ -147,7 +151,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 	})
 
 	// copy
-	mux.HandleFunc(pcat.fullPath(`/copy/`), func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc(pcat.fullPath(`/copy/`, false), func(w http.ResponseWriter, req *http.Request) {
 		id := pathRegId.FindString(req.URL.Path)
 		model, ok := stubById(id, w, req)
 		if !ok {
@@ -163,7 +167,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			return
 		}
 
-		w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`%s/edit/%d`), Config.App.BaseUri, newId))
+		w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`, true), newId))
 		w.WriteHeader(http.StatusFound)
 	})
 

@@ -21,7 +21,7 @@
 	</ul>
     {{ template "content" . }}
 	<footer class="main-footer navbar navbar-fixed-bottom">
-	Victor K&copy; 2016
+	Victor K&copy; 2023
 	</footer>
 	</div>
 
