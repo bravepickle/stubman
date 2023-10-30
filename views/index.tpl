@@ -1,6 +1,6 @@
 {{ define "title"}}<title>Stubman | Stubs List</title>{{ end }}
 {{ define "content"}}<h2>List</h2>
-<button type="button" class="btn btn-success" id="btn-create">Create</button>
+<a href="{{ .BaseUri }}/stubman/create/" class="btn btn-success">Create</a>
 <table class="table table-striped">
 <thead>
 	<tr>

@@ -103,7 +103,7 @@ func initStubman(mux *http.ServeMux) error {
 			host += `:` + Config.App.Port
 		}
 
-		fmt.Printf("Stubman path: http://%s%s%s\nBase path: %s\n", host, Config.App.BaseUri, prefixPathStubman, Config.App.BasePath)
+		fmt.Printf("Stubman path: http://%s%s%s/\nBase path: %s\n", host, Config.App.BaseUri, prefixPathStubman, Config.App.BasePath)
 	}
 
 	return nil

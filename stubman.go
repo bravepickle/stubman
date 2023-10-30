@@ -70,7 +70,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				return
 			}
 
-			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), id))
+			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`%s/edit/%d`), Config.App.BaseUri, id))
 			w.WriteHeader(http.StatusFound)
 
 			return
@@ -111,7 +111,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 				return
 			}
 
-			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), model.Id))
+			w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`%s/edit/%d`), Config.App.BaseUri, model.Id))
 			w.WriteHeader(http.StatusFound)
 
 			return
@@ -163,7 +163,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			return
 		}
 
-		w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`/edit/%d`), newId))
+		w.Header().Add(`Location`, fmt.Sprintf(pcat.fullPath(`%s/edit/%d`), Config.App.BaseUri, newId))
 		w.WriteHeader(http.StatusFound)
 	})
 
