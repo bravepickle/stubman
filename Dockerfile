@@ -8,13 +8,16 @@ COPY . /app
 RUN apk add --no-cache gcc alpine-sdk \
     && go mod vendor \
     && CGO_ENABLED=1 CGO_LDFLAGS="-static" go build -o stubman \
-    && ./stubman db:init \
-    && ./stubman config:init
+    && mv config.yaml.dist config.yaml \
+    && ./stubman db:init
 
 # =========
 FROM alpine:3.17
 
 WORKDIR /app
+
+LABEL author="bravepickle"
+LABEL description="Stubman - mocking API service"
 
 COPY --from=go-app /app/favicon.* /app/
 COPY --from=go-app /app/config.yaml /app/config.yaml

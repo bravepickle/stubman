@@ -50,7 +50,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			return
 		}
 
-		page := Page{HomePage: true, Data: models}
+		page := Page{HomePage: true, Data: models, BaseUri: Config.App.BaseUri}
 		RenderPage(`index.tpl`, page, w)
 	})
 
@@ -77,7 +77,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		}
 
 		model := NewNullObjectStub()
-		page := Page{CreatePage: true, Data: model}
+		page := Page{CreatePage: true, Data: model, BaseUri: Config.App.BaseUri}
 		RenderPage(`create.tpl`, page, w)
 	})
 
@@ -117,7 +117,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 			return
 		}
 
-		page := Page{EditPage: true, Data: model}
+		page := Page{EditPage: true, Data: model, BaseUri: Config.App.BaseUri}
 		RenderPage(`edit.tpl`, page, w)
 	})
 
@@ -252,7 +252,7 @@ func show404ErrorPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(`X-Stubman-Page`, `true`)
 	w.WriteHeader(http.StatusNotFound)
 
-	page := PageError{Title: `404 Not Found`, Message: `Page "` + r.URL.String() + `" not found`}
+	page := PageError{Title: `404 Not Found`, Message: `Page "` + r.URL.String() + `" not found`, BaseUri: Config.App.BaseUri}
 	RenderErrorPage(`error.tpl`, page, w)
 }
 

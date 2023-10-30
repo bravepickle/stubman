@@ -36,6 +36,7 @@ type AppConfigStruct struct {
 	Port     string
 	Host     string
 	BasePath string `yaml:"base_path"`
+	BaseUri  string `yaml:"base_uri"`
 }
 
 func (t *AppConfigStruct) String() string {
