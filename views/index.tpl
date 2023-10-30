@@ -26,7 +26,7 @@
 		<td>{{.Views}}</td>
 		<td>
 			<a href="edit/{{.Id}}" title="edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
-			<a href="#" data-href="/stubman/delete/{{.Id}}" data-toggle="modal" data-target="#del-confirm" class="btn-del" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+			<a href="#" data-href="{{ .BaseUri }}/stubman/delete/{{.Id}}" data-toggle="modal" data-target="#del-confirm" class="btn-del" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
 			<a href="copy/{{.Id}}" title="copy"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></a>
 		</td>
 	</tr>
@@ -56,7 +56,7 @@
 {{ end }}
 
 {{ define "scripts" }}
-<script src="/stubman/static/js/index.js" crossorigin="anonymous"></script>
+<script src="{{ .BaseUri }}/stubman/static/js/index.js" crossorigin="anonymous"></script>
 <script type="text/javascript">
    $(document).ready(function() {
 		initIndex();
