@@ -17,7 +17,7 @@
 	<h1>Stubman</h1>
 	<ul class="nav nav-tabs">
 	  <li role="presentation" {{ if .HomePage }}class="active"{{ end }}><a href="{{ .BaseUri }}/stubman/">Home</a></li>
-	  <li role="presentation" {{ if .CreatePage }}class="active"{{ end }}><a href="{{ .BaseUri }}/stubman/create">New</a></li>
+	  <li role="presentation" {{ if .CreatePage }}class="active"{{ end }}><a href="{{ .BaseUri }}/stubman/create/">New</a></li>
 	</ul>
     {{ template "content" . }}
 	<footer class="main-footer navbar navbar-fixed-bottom">
