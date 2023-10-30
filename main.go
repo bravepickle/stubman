@@ -89,7 +89,21 @@ func initStubman(mux *http.ServeMux) error {
 	AddStubmanCrudHandlers(prefixPathStubman, mux)
 
 	if Debug {
-		fmt.Printf("Stubman path: http://%s%s/\nBase path: %s\n", Config.App.String(), prefixPathStubman, Config.App.BasePath)
+		baseUri := Config.App.BaseUri
+		if baseUri == `` {
+			baseUri = `/`
+		}
+
+		host := Config.App.Host
+		if host == `` {
+			host = `0.0.0.0`
+		}
+
+		if Config.App.Port != `80` {
+			host += `:` + Config.App.Port
+		}
+
+		fmt.Printf("Stubman path: http://%s%s%s/\nBase path: %s\n", host, Config.App.BaseUri, prefixPathStubman, Config.App.BasePath)
 	}
 
 	return nil

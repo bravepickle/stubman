@@ -124,7 +124,7 @@
 {{ end }}
 
 {{ define "scripts" }}
-<script src="/stubman/static/js/edit.js" crossorigin="anonymous"></script>
+<script src="{{ .BaseUri }}/stubman/static/js/edit.js" crossorigin="anonymous"></script>
 <script type="text/javascript">
    $(document).ready(function() {
 		initEdit();
