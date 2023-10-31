@@ -68,6 +68,11 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 		return nil, err
 	}
 
+	bodyStr := string(body)
+	if bodyStr != `` {
+	    log.Println(` ------- REQUEST BODY: `, bodyStr)
+	}
+
 	var stubs []Stub
 	for found.Next() {
 		model := Stub{}
@@ -80,7 +85,7 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 
 		model.Decode()
 
-		if matchStubData(&model, req, string(body)) {
+		if matchStubData(&model, req, bodyStr) {
 			stubs = append(stubs, model)
 		}
 	}
@@ -96,7 +101,7 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 		return &stubs[0], nil
 	}
 
-	log.Println(` ------- NOT FOUND: `, stubs)
+	log.Println(` ------- NOT FOUND`)
 
 	return selected, nil
 }
@@ -116,6 +121,8 @@ func matchStubData(model *Stub, req *http.Request, body string) bool {
 		if body != model.RequestParsed.Body {
 			return false
 		}
+
+		log.Println(` ------- NOT MATCHED BODY: `, model.RequestParsed.Body)
 	}
 
 	return true
