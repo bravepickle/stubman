@@ -69,10 +69,6 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 	}
 
 	bodyStr := string(body)
-	if bodyStr != `` {
-	    log.Println(` ------- REQUEST BODY: `, bodyStr)
-	}
-
 	var stubs []Stub
 	for found.Next() {
 		model := Stub{}
@@ -122,7 +118,7 @@ func matchStubData(model *Stub, req *http.Request, body string) bool {
 			return false
 		}
 
-		log.Println(` ------- NOT MATCHED BODY: `, model.RequestParsed.Body)
+// 		log.Println(` ------- NOT MATCHED BODY: `, model.RequestParsed.Body)
 	}
 
 	return true

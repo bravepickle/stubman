@@ -296,7 +296,7 @@ func NewStubFromRequest(req *http.Request) *Stub {
 
 	stub.Encode()
 
-	log.Println(` ------ STUB `, stub)
+	log.Println(` ------ REQUEST `, stub)
 
 	return stub
 }
