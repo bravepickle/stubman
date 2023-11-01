@@ -10,7 +10,7 @@
 	font-size: 1em;
 	padding: 20px;
 	margin-top: 10px;
-	border-radius: 6px;
+	border-radius: 6px 6px 0 0;
 }
 
 .add-header-container {
