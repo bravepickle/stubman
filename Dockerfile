@@ -28,7 +28,7 @@ COPY --from=go-app /app/stubman /app/stubman
 
 VOLUME /app
 
-EXPOSE 3001
+EXPOSE 80
 
 # CMD [ "/app/stubman", "--debug", "-f", "config.yaml"]
 ENTRYPOINT [ "/app/stubman" ]
