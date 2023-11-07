@@ -21,7 +21,7 @@
 	</ul>
     {{ template "content" . }}
 	<footer class="main-footer navbar navbar-fixed-bottom">
-	Victor K&copy; 2023
+		&copy; 2023 <a href="https://github.com/bravepickle">bravepickle</a>
 	</footer>
 	</div>
 
