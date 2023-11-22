@@ -55,7 +55,7 @@ func SortByRequest(req *http.Request, stubs *[]Stub) {
 func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err error) {
 	found, err := searchStmt.Query(req.Method, req.RequestURI+`%`)
 
-	log.Println(` ------- URI SEARCH: `, req.Method, req.RequestURI)
+	log.Println(`[INFO] URI SEARCH: `, req.Method, req.RequestURI)
 
 	if err != nil {
 		log.Println(req.RequestURI, `: `, err.Error())
@@ -63,14 +63,24 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 		return nil, err
 	}
 
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		return nil, err
-	}
+	var bodyStr string
 
-	bodyStr := string(body)
-	if bodyStr != `` {
-	    log.Println(` ------- REQUEST BODY: `, bodyStr)
+	if req.Method != `GET` {
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			log.Println(`[ERROR] Failed reading body: `, err.Error(), `BODY:`, body)
+
+			return nil, err
+		}
+
+		bodyStr := string(body)
+		if bodyStr != `` {
+			log.Println(`[INFO] REQUEST BODY: `, bodyStr)
+		} else if req.Method != `GET` {
+			log.Println(`[INFO] NO BODY`)
+		}
+	} else {
+		bodyStr = `` // no body for GET method is possible
 	}
 
 	var stubs []Stub
@@ -94,14 +104,14 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 	if stubsNum > 1 {
 		SortByRequest(req, &stubs)
 
-		log.Println(` ------- FOUND: `, stubs[0].Id, req.Method, req.RequestURI)
+		log.Println(`[INFO] FOUND: `, stubs[0].Id, req.Method, req.RequestURI)
 
 		return &stubs[0], nil
 	} else if stubsNum == 1 {
 		return &stubs[0], nil
 	}
 
-	log.Println(` ------- NOT FOUND`)
+	log.Println(`[INFO] STUB NOT FOUND`)
 
 	return selected, nil
 }

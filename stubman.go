@@ -47,7 +47,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		models, err := repo.FindAll()
 
 		if err != nil {
-			log.Println(err.Error())
+			log.Println(`[ERROR]`, err.Error())
 			w.Write([]byte(err.Error()))
 			w.WriteHeader(500)
 
@@ -135,7 +135,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 
 		deleted, err := repo.Delete(model.Id)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println(`[ERROR]`, err.Error())
 			w.Write([]byte(err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
 
@@ -188,6 +188,7 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 		} else {
 			model, err := selectStub(req, searchStmt)
 			if err != nil {
+				log.Println(`[ERROR] Failed selecting stub:`, err.Error(), `REQUEST: `, req)
 				w.Write([]byte(`Internal Server Error: ` + err.Error()))
 				w.WriteHeader(http.StatusInternalServerError)
 
@@ -207,8 +208,8 @@ func AddStubmanCrudHandlers(prefix string, mux *http.ServeMux) {
 					w.Write([]byte(model.ResponseParsed.Body))
 				}
 
-				log.Println(`======== RESPONSE MODEL `, model)
-				log.Println(`======== RESPONSE BODY `, model.ResponseParsed.Body)
+				log.Println(`[INFO] RESPONSE MODEL`, model)
+				log.Println(`[INFO] RESPONSE BODY`, model.ResponseParsed.Body)
 
 				go viewsStmt.Exec(model.Id) // non-blocking mode for update views
 			}
@@ -226,7 +227,7 @@ func stubById(id string, w http.ResponseWriter, req *http.Request) (*Stub, bool)
 
 	idNum, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(`[ERROR]`, err.Error())
 		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusBadRequest)
 
@@ -235,7 +236,7 @@ func stubById(id string, w http.ResponseWriter, req *http.Request) (*Stub, bool)
 
 	model, err := repo.Find(idNum)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(`[ERROR]`, err.Error())
 		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusBadRequest)
 
@@ -274,7 +275,7 @@ func NewStubFromRequest(req *http.Request) *Stub {
 
 			stub.RequestParsed.Headers = append(stub.RequestParsed.Headers, h)
 		} else {
-			fmt.Println(`Skipping broken request header`, val, `for`, req.RequestURI)
+			fmt.Println(`[INFO] Skipping broken request header`, val, `for`, req.RequestURI)
 		}
 	}
 	sort.Strings(stub.RequestParsed.Headers)
@@ -288,7 +289,7 @@ func NewStubFromRequest(req *http.Request) *Stub {
 
 			stub.ResponseParsed.Headers = append(stub.ResponseParsed.Headers, h)
 		} else {
-			fmt.Println(`Skipping broken response header`, val, `for`, req.RequestURI)
+			fmt.Println(`[INFO] Skipping broken response header`, val, `for`, req.RequestURI)
 		}
 
 	}
@@ -296,7 +297,7 @@ func NewStubFromRequest(req *http.Request) *Stub {
 
 	stub.Encode()
 
-	log.Println(` ------ STUB `, stub)
+	log.Println(`[INFO] STUB`, stub)
 
 	return stub
 }
