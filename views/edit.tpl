@@ -102,8 +102,19 @@
 </div>
 </fieldset>
 
-<div class="clearfix">
-	<button type="submit" class="btn btn-primary pull-right">Update</button>
+<div class="form-group">
+	<label>CURL Example</label>
+	<div>
+		<pre id="curl-preview"></pre>
+	</div>
+</div>
+
+<div class="clearfix pull-right">
+	<button type="button" class="btn btn-secondary" id="curl-copy-btn">
+		<span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+	 	<span class="b-label">Copy as CURL</span>
+	</button>
+	<button type="submit" class="btn btn-primary">Update</button>
 </div>
 </form>
 
@@ -124,6 +135,7 @@
 {{ end }}
 
 {{ define "scripts" }}
+<script src="{{ .BaseUri }}/stubman/static/js/curl-generator.umd.js" crossorigin="anonymous"></script>
 <script src="{{ .BaseUri }}/stubman/static/js/edit.js" crossorigin="anonymous"></script>
 <script type="text/javascript">
    $(document).ready(function() {
