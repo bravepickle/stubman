@@ -12,6 +12,7 @@ app:
   host: null   # any host will be checked
   port: 3001   # port to listen to
   base_path: . # base path to project templates, configs, etc.
+  base_uri: "" # base uri path for the stub service
 
 stubman:
   disabled: false

@@ -1,8 +1,4 @@
 function initIndex() {
-	$('#btn-create').click(function() {
-		top.location.href = 'create'
-	});
-	
 	var delUri
 	$('#del-confirm').on('shown.bs.modal', function (ev) {
  		$('#btn-del-cancel').focus()

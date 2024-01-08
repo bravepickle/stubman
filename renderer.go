@@ -60,9 +60,11 @@ type Page struct {
 	HomePage   bool
 	CreatePage bool
 	EditPage   bool
+	BaseUri    string
 }
 
 type PageError struct {
 	Title   string
 	Message string
+	BaseUri string
 }

@@ -61,6 +61,8 @@ Example:
 - log time taken for handling requests
 - support method ANY which skips matching
 - modify headers on save and keep as little as possible modifications on request handling
+- add flag to strip GET params before matching given endpoint
+- urldecode string before matching search pattern
 
 ## Usage Examples
 ### GUI Edit Page

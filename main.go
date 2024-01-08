@@ -70,16 +70,16 @@ func main() {
 func initStaticHandlers(mux *http.ServeMux) {
 	//favicon
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, Config.App.BasePath + `/favicon.ico`)
+		http.ServeFile(w, r, Config.App.BasePath+`/favicon.ico`)
 	})
 
 	mux.HandleFunc("/favicon.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, Config.App.BasePath + `/favicon.png`)
+		http.ServeFile(w, r, Config.App.BasePath+`/favicon.png`)
 	})
 
 	prefixLen := len(prefixPathStubman) + 1
 	mux.HandleFunc("/stubman/static/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, Config.App.BasePath + `/` + r.URL.Path[prefixLen:])
+		http.ServeFile(w, r, Config.App.BasePath+`/`+r.URL.Path[prefixLen:])
 	})
 }
 
@@ -89,7 +89,21 @@ func initStubman(mux *http.ServeMux) error {
 	AddStubmanCrudHandlers(prefixPathStubman, mux)
 
 	if Debug {
-		fmt.Printf("Stubman path: http://%s%s/\nBase path: %s\n", Config.App.String(), prefixPathStubman, Config.App.BasePath)
+		baseUri := Config.App.BaseUri
+		if baseUri == `` {
+			baseUri = `/`
+		}
+
+		host := Config.App.Host
+		if host == `` {
+			host = `0.0.0.0`
+		}
+
+		if Config.App.Port != `80` {
+			host += `:` + Config.App.Port
+		}
+
+		fmt.Printf("Stubman path: http://%s%s%s/\nBase path: %s\n", host, Config.App.BaseUri, prefixPathStubman, Config.App.BasePath)
 	}
 
 	return nil
