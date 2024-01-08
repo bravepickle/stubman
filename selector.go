@@ -122,6 +122,11 @@ func matchStubData(model *Stub, req *http.Request, body string) bool {
 		for _, h := range model.RequestParsed.Headers {
 			arr := strings.SplitN(h, `:`, 2)
 			if !containsHeader(strings.TrimSpace(arr[0]), strings.TrimSpace(arr[1]), req.Header) {
+				log.Println(`[INFO] MATCHING FAILED BY HEADERS...`)
+				log.Println("[INFO] Request headers:", req.Header)
+				log.Println("[INFO] Compared stub body:", model.RequestParsed.Headers)
+				log.Println(`[INFO] MATCHING FAILED [END]`)
+
 				return false
 			}
 		}
@@ -129,6 +134,11 @@ func matchStubData(model *Stub, req *http.Request, body string) bool {
 
 	if req.Method != `GET` && req.Method != `ANY` && model.RequestParsed.Body != `` {
 		if body != model.RequestParsed.Body {
+			log.Println(`[INFO] MATCHING FAILED BY BODY...`)
+			log.Println("[INFO] Request body:", body, "(len:", len(body), ")")
+			log.Println("[INFO] Compared stub body:", model.RequestParsed.Body, "(len:", len(model.RequestParsed.Body), ")")
+			log.Println(`[INFO] MATCHING FAILED [END]`)
+
 			return false
 		}
 	}
