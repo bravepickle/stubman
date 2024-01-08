@@ -73,7 +73,7 @@ func selectStub(req *http.Request, searchStmt *sql.Stmt) (selected *Stub, err er
 			return nil, err
 		}
 
-		bodyStr := string(body)
+		bodyStr = string(body)
 		if bodyStr != `` {
 			log.Println(`[INFO] REQUEST BODY: `, bodyStr)
 		} else if req.Method != `GET` {
