@@ -138,8 +138,9 @@
 <script src="{{ .BaseUri }}/stubman/static/js/curl-generator.umd.js" crossorigin="anonymous"></script>
 <script src="{{ .BaseUri }}/stubman/static/js/edit.js" crossorigin="anonymous"></script>
 <script type="text/javascript">
+   window.appConfig = {baseUri: "{{ .BaseUri }}"};
    $(document).ready(function() {
-		initEdit();
+		initEdit(window.appConfig);
    });
 </script>
 {{ end }}

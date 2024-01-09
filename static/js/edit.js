@@ -1,4 +1,4 @@
-function initEdit() {
+function initEdit(appConfig) {
 	var reqHeader = $('#header-request-tpl').html()
 	var reqHeadersList = $('#request-headers')
 	var reqUriEl = $('#model-request_uri')
@@ -113,7 +113,7 @@ function initEdit() {
 
 	function updateCurlPreview() {
 		var params = {
-			url: location.protocol + '//' + location.host + reqUriEl.val(),
+			url: location.protocol + '//' + location.host + appConfig.baseUri + reqUriEl.val(),
 			method: method.val() === 'ANY' || !method.val() ? 'GET' : method.val(),
 			headers: {}
 		}
@@ -153,7 +153,8 @@ function initEdit() {
 					params.body = JSON.stringify(parsed)
 				}
 			} catch(e) {
-				console.log("Body parse error:", e)
+				console.error("Body parse error:", e)
+				params.body = reqBodyEl.val().trim() // keep as it is
 			}
 		}
 
